@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import Header from "./ui/header";
 import SearchForm from "./ui/form/search-form";

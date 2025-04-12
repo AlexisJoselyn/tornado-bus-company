@@ -1,68 +1,43 @@
 'use client'
 
-import { searchOriginCities } from '@/app/lib/api/cities'
-import { MapIcon } from '@heroicons/react/24/outline'
-import { useState, useEffect } from 'react'
-import Dropdown from './dropdown'
+import { MapIcon } from "@heroicons/react/24/outline";
+import AsyncSelectComponent from "./async-select";
+import { useState } from "react";
+
+interface Option {
+    value: string;
+    label: string;
+}
 
 export default function Origin() {
-    const [query, setQuery] = useState('')
-    const [cities, setCities] = useState<{ id: number; name: string }[]>([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [showDropdown, setShowDropdown] = useState(false)
+    const [options, setOptions] = useState<Option[]>([]);
 
-    // Buscar ciudades con debounce
-    useEffect(() => {
-        if (query.length < 3) {
-            setCities([])
-            return
-        }
+    const loadOptions = async (inputValue: string, callback: (options: Option[]) => void) => {
+        return new Promise<Option[]>((resolve) => {
+            setTimeout(() => {
+                const results = [
+                    { value: 'chicago', label: 'Chicago' },
+                    { value: 'los-angeles', label: 'Los Angeles' },
+                    { value: 'new-york', label: 'New York' },
+                    { value: 'san-francisco', label: 'San Francisco' },
+                ].filter(option => option.label.toLowerCase().includes(inputValue.toLowerCase()));
 
-        const timer = setTimeout(async () => {
-            setIsLoading(true)
-            try {
-                const response = await searchOriginCities(query)
-                setCities(response.data)
-                setShowDropdown(true)
-            } catch (error) {
-                console.error('Error buscando ciudades:', error)
-                setCities([])
-            } finally {
-                setIsLoading(false)
-            }
-        }, 300)
-
-        return () => clearTimeout(timer)
-    }, [query])
-
+                callback(results);
+                resolve(results);
+            }, 1000);
+        });
+    };
+   
     return (
-        <div className="mb-4 relative">
-            <label htmlFor="origin" className="mb-2 block text-sm font-semibold">
+        <div className="mb-4">
+            <label htmlFor="origen" className="mb-2 block text-sm font-semibold">
                 Origen:
             </label>
-            <div className="relative">
-                <input
-                    id="origin"
-                    name="origin"
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => query.length > 0 && setShowDropdown(true)}
-                    placeholder="¿De dónde sales?"
-                    className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-                <MapIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-                {showDropdown && (
-                    <Dropdown
-                        items={cities}
-                        isLoading={isLoading}
-                        onSelect={(name) => {
-                            setQuery(name)
-                            setShowDropdown(false)
-                        }}
-                        onClose={() => setShowDropdown(false)}
-                    />
-                )}
+            <div className="relative mt-2 rounded-md">
+                <div className="relative">
+                    <AsyncSelectComponent name={'origen'} id={'origen'} placeholder={'¿De dónde sales?'} loadOptions={loadOptions} />
+                    <MapIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+                </div>
             </div>
         </div>
     )
