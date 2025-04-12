@@ -1,19 +1,32 @@
 'use client'
 
-import { MapIcon } from "@heroicons/react/24/outline"
-// import Dropdown from "./dropdown";
+import { MapIcon } from "@heroicons/react/24/outline";
+import AsyncSelectComponent from "./async-select";
+import { useState } from "react";
 
-// const cities = [
-//     { id: 1, name: 'Los Angeles' },
-//     { id: 2, name: 'New York' },
-//     { id: 3, name: 'Chicago' },
-//     { id: 4, name: 'Houston' },
-//     { id: 5, name: 'Phoenix' },
-//     { id: 6, name: 'Philadelphia' },
-//     { id: 7, name: 'San Antonio' },
-// ];
+interface Option {
+    value: string;
+    label: string;
+}
 
 export default function Destination() {
+
+    const loadOptions = async (inputValue: string, callback: (options: Option[]) => void) => {
+        return new Promise<Option[]>((resolve) => {
+            setTimeout(() => {
+                const results = [
+                    { value: 'chicago', label: 'Chicago' },
+                    { value: 'los-angeles', label: 'Los Angeles' },
+                    { value: 'new-york', label: 'New York' },
+                    { value: 'san-francisco', label: 'San Francisco' },
+                ].filter(option => option.label.toLowerCase().includes(inputValue.toLowerCase()));
+
+                callback(results);
+                resolve(results);
+            }, 1000);
+        });
+    };
+   
     return (
         <div className="mb-4">
             <label htmlFor="destino" className="mb-2 block text-sm font-semibold">
@@ -21,18 +34,9 @@ export default function Destination() {
             </label>
             <div className="relative mt-2 rounded-md">
                 <div className="relative">
-                    <input
-                        id="destino"
-                        name="destino"
-                        step="0.01"
-                        placeholder="¿A dónde vas?"
-                        type="text"
-                        className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                        aria-describedby="customer-error"
-                    />
+                    <AsyncSelectComponent name={'destino'} id={'destino'} placeholder={'¿A dónde vas?'} loadOptions={loadOptions} />
                     <MapIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
                 </div>
-                {/* <Dropdown cities={cities} /> */}
             </div>
         </div>
     )

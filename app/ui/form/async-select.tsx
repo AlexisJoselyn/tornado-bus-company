@@ -47,9 +47,7 @@ export default function AsyncSelectComponent({
             onChange={handleChange}
             onFocus={handleFocus}
             styles={{
-                control: (baseStyles, state) => {
-                    console.log('contro baseStyles', baseStyles, 'state', state)
-                    return{
+                control: (baseStyles, state) =>({
                     ...baseStyles,
                     border: state.isFocused ? '2px solid #3B82F6' : '2px solid black',
                     borderRadius: '0.375rem',
@@ -61,7 +59,7 @@ export default function AsyncSelectComponent({
                         borderColor: state.isFocused ? '#3B82F6' : 'black',
                     },
                     width: '240px',
-                }},
+                }),
                 indicatorsContainer: (baseStyles) => ({
                     ...baseStyles,
                     display: 'none',

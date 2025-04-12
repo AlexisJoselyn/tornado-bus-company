@@ -10,8 +10,7 @@ interface Option {
 }
 
 export default function Origin() {
-    const [options, setOptions] = useState<Option[]>([]);
-
+    
     const loadOptions = async (inputValue: string, callback: (options: Option[]) => void) => {
         return new Promise<Option[]>((resolve) => {
             setTimeout(() => {
