@@ -2,7 +2,7 @@
 
 import { MapIcon } from "@heroicons/react/24/outline";
 import AsyncSelectComponent from "./async-select";
-import { useState } from "react";
+import { searchOriginCities } from "@/app/lib/api/cities";
 
 interface Option {
     value: string;
@@ -10,23 +10,29 @@ interface Option {
 }
 
 export default function Origin() {
-    
-    const loadOptions = async (inputValue: string, callback: (options: Option[]) => void) => {
-        return new Promise<Option[]>((resolve) => {
-            setTimeout(() => {
-                const results = [
-                    { value: 'chicago', label: 'Chicago' },
-                    { value: 'los-angeles', label: 'Los Angeles' },
-                    { value: 'new-york', label: 'New York' },
-                    { value: 'san-francisco', label: 'San Francisco' },
-                ].filter(option => option.label.toLowerCase().includes(inputValue.toLowerCase()));
 
-                callback(results);
-                resolve(results);
-            }, 1000);
-        });
+    const loadOptions = async (inputValue: string, callback: (options: Option[]) => void) => {
+        try {
+            if (inputValue.length >= 3) {
+                const response = await searchOriginCities(inputValue);
+                console.log('response', response.data);
+                const options: Option[] = response.data.map((city: any) => ({
+                    value: city.id.toString(),
+                    label: city.name,
+                }));
+                callback(options);
+                return options;
+            } else {
+                callback([]);
+                return [];
+            }
+        } catch (error) {
+            console.error("Error fetching cities:", error);
+            callback([]);
+            return [];
+        }
     };
-   
+
     return (
         <div className="mb-4">
             <label htmlFor="origen" className="mb-2 block text-sm font-semibold">
