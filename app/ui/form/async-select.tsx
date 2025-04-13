@@ -7,6 +7,7 @@ interface AsyncSelectProps {
     id: string;
     placeholder: string;
     loadOptions: (inputValue: string, callback: (options: Option[]) => void) => Promise<Option[]> | void;
+    onChange?: (newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void;
 }
 
 interface Option {
@@ -18,16 +19,19 @@ export default function AsyncSelectComponent({
     name,
     id,
     placeholder,
-    loadOptions
+    loadOptions,
+    onChange
 }: AsyncSelectProps) {
     const [isMounted, setIsMounted] = useState(false);
     const [selectedValue, setSelectedValue] = useState<SingleValue<Option>>(null);
-
 
     useEffect(() => setIsMounted(true), []);
 
     const handleChange = (newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => {
         setSelectedValue(newValue);
+        if (onChange) {
+            onChange(newValue, actionMeta);
+        }
     };
 
     const handleFocus = () => {
