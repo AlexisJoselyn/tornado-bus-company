@@ -46,14 +46,14 @@ export default function Origin() {
 
     return (
         <div className="mb-4">
-            <label htmlFor="origen" className="mb-2 block text-sm font-semibold">
+            <label htmlFor="origin" className="mb-2 block text-sm font-semibold">
                 Origen:
             </label>
             <div className="relative mt-2 rounded-md">
                 <div className="relative">
                     <AsyncSelectComponent
                         name={'origen'}
-                        id={'origen'}
+                        id={'origin'}
                         placeholder={'¿De dónde sales?'}
                         loadOptions={loadOptions}
                         onChange={handleOriginChange}

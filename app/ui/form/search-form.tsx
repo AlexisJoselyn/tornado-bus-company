@@ -4,41 +4,56 @@ import Origin from "./origin";
 import PassengerSelector from "./passenger";
 import { useState } from "react";
 import { PassengerType } from "@/app/@types/passengers";
+import { DepartureTravelFilters } from "@/app/@types/travels";
+import { formatPassengerCounts, prepareTravelFilters } from "@/app/lib/utils/formatData";
+import { listDepartureTravels } from "@/app/lib/api/cities";
 
 export default function SearchForm() {
     const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
-    const [passengerInputValue, setPassengerInputValue] = useState("")
+    const [passengerInputValue, setPassengerInputValue] = useState("");
+    const [passengerCounts, setPassengerCounts] = useState<Record<number, number>>({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handlePassengerChange = (counts: { [key: number]: number }, types: PassengerType[]) => {
         const formatted = formatPassengerCounts(counts, types)
         setPassengerInputValue(formatted)
+        setPassengerCounts(counts);
     }
 
-    const formatPassengerCounts = (counts: { [key: number]: number }, types: PassengerType[]): string => {
-        return types
-            .map((type) => {
-                const count = counts[type.id] || 0
-                return count > 0 ? `${count} ${type.name}` : null
-            })
-            .filter(Boolean)
-            .join(", ")
-    }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget as HTMLFormElement)
+        try {
+            const formData = Object.fromEntries(
+                new FormData(e.currentTarget as HTMLFormElement)
+            ) as unknown as {
+                status: string;
+                origen: string;
+                destino: string;
+                fecha: string;
+            };
 
-        const data = {
-            tripType: formData.get('status'),
-            origin: formData.get('origen'),
-            destination: formData.get('destino'),
-            passengers: passengerInputValue,
-            date: formData.get('fecha')
+            const totalPassengers = Object.values(passengerCounts).reduce((sum, count) => sum + count, 0);
+
+            const apiFilters: DepartureTravelFilters = prepareTravelFilters({
+                date: formData.fecha,
+                origin: formData.origen,
+                destination: formData.destino,
+                tripType: formData.status as 'one-way' | 'round-trip',
+            }, totalPassengers);
+
+            console.log('Enviando a API:', apiFilters);
+
+            const response = await listDepartureTravels(apiFilters);
+            console.log('Respuesta de la API:', response.data);
+
+        } catch (error) {
+            console.error('Error al buscar viajes:', error);
+        } finally {
+            setIsLoading(false);
         }
-
-        console.log('Datos a enviar:', data)
-        // Aquí harías la llamada a tu API
-    }
+    };
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-4 w-full max-w-3xl p-4 bg-white rounded-lg shadow-md">
@@ -130,6 +145,7 @@ export default function SearchForm() {
             </div>
             <button
                 type="submit"
+                disabled={isLoading}
                 className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
                 Buscar

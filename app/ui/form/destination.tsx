@@ -42,14 +42,14 @@ export default function Destination() {
 
     return (
         <div className="mb-4">
-            <label htmlFor="destino" className="mb-2 block text-sm font-semibold">
+            <label htmlFor="destination" className="mb-2 block text-sm font-semibold">
                 Destino:
             </label>
             <div className="relative mt-2 rounded-md">
                 <div className="relative">
                     <AsyncSelectComponent
                         name={'destino'}
-                        id={'destino'}
+                        id={'destination'}
                         placeholder={'¿A dónde vas?'}
                         loadOptions={loadOptions}
                     />

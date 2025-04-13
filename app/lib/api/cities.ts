@@ -1,4 +1,5 @@
 import { CitiesResponse, DestinationsResponse } from "@/app/@types/cities";
+import { DepartureTravelFilters, DepartureTravelsResponse } from "@/app/@types/travels";
 
 const BASE_URL = 'https://discovery.local.onroadts.com/v1/web';
 
@@ -35,4 +36,32 @@ export const searchDestinations = async (
     }
   
     return response.json();
+  };
+
+  export const listDepartureTravels = async (
+    filters: DepartureTravelFilters,
+    limit: number = 25,
+    page: number = 1
+  ): Promise<DepartureTravelsResponse> => {
+    const response = await fetch(
+      `${BASE_URL}/list/departure-travels?isMultiRoute=true&isReturn=false`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          limit,
+          page,
+          filters,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error al listar los viajes de salida');
+    }
+    
+    const responseData = await response.json();
+  
+    return responseData;
   };
