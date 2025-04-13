@@ -3,7 +3,7 @@
 import { MapIcon } from "@heroicons/react/24/outline";
 import AsyncSelectComponent from "./async-select";
 import { searchDestinations } from "@/app/lib/api/cities";
-import { useTravelStore } from "@/app/store";
+import { useTravelStore } from "@/app/lib/store/store";
 
 interface Option {
     value: string;
