@@ -16,6 +16,7 @@ export default function Page() {
   const markSeats = useTicketStore((state) => state.markSeats);
   const totalDetail = useTicketStore((state) => state.totalDetail);
   const searchDataStore = useSearchStore((state) => state.searchData)
+  const setTotalSeats = useTicketStore((state)=> state.setTotalSeats)
 
 
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -39,6 +40,7 @@ export default function Page() {
       alert('Ya has seleccionado el máximo de asientos permitidos.');
       return;
     }
+    setTotalSeats(updatedSeats.length);
 
     setSelectedSeats(updatedSeats);
 

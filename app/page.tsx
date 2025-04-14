@@ -1,14 +1,13 @@
 'use client';
 
 import Image from "next/image";
-import Header from "./ui/header";
 import SearchForm from "./ui/form/search-form";
 import { Suspense } from "react";
 
 export default function Page() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main className="flex flex-col items-center justify-center gap-8">
         <div className="relative w-full h-[300px] md:h-[450px] overflow-hidden">
           <Image
