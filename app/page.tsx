@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Header from "./ui/header";
 import SearchForm from "./ui/form/search-form";
+import { Suspense } from "react";
 
 export default function Page() {
   return (
@@ -27,7 +28,9 @@ export default function Page() {
             alt="Banner image of the bus company mobile version"
           />
         </div>
-        <SearchForm />
+        <Suspense>
+          <SearchForm />
+        </Suspense>
       </main>
       <footer className="flex flex-row items-center justify-center gap-8 p-8">
         <div className="flex flex-col items-center justify-center gap-4 p-4">

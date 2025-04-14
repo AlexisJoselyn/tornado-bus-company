@@ -1,4 +1,4 @@
-import { PassengerType } from '@/app/@types/passengers';
+import { PassengerType } from '@/app/lib/types/passengers';
 import { getPassengerTypes } from '@/app/lib/api/passenger';
 import { useEffect, useState } from 'react';
 

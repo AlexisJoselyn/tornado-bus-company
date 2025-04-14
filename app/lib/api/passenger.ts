@@ -1,4 +1,4 @@
-import { PassengerType } from "@/app/@types/passengers";
+import { PassengerType } from "@/app/lib/types/passengers";
 
 const BASE_URL = 'https://api.local.onroadts.com/v1/web';
 

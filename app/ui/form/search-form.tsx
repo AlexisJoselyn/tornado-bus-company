@@ -5,12 +5,10 @@ import Destination from "./destination";
 import Origin from "./origin";
 import PassengerSelector from "./passenger";
 import { useState } from "react";
-import { PassengerType } from "@/app/@types/passengers";
-// import { DepartureTravelFilters } from "@/app/@types/travels";
+import { PassengerType } from "@/app/lib/types/passengers";
 import { formatPassengerCounts } from "@/app/lib/utils/formatData";
-// import { listDepartureTravels } from "@/app/lib/api/cities";
-// import { useRouter } from 'next/navigation';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchStore } from "@/app/lib/store/store";
 
 export default function SearchForm() {
     const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
@@ -19,6 +17,7 @@ export default function SearchForm() {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter()
     const searchParams = useSearchParams();
+    const setSearchData = useSearchStore((state) => state.setSearchData)
 
     const handlePassengerChange = (counts: { [key: number]: number }, types: PassengerType[]) => {
         const formatted = formatPassengerCounts(counts, types)
@@ -37,7 +36,7 @@ export default function SearchForm() {
                 status: string
                 origin: string
                 destination: string
-                date: string // Cambiado de 'fecha' a 'date' para coincidir con el name del input
+                date: string
             }
 
             const totalPassengers = Object.values(passengerCounts).reduce((sum, count) => sum + count, 0)
@@ -48,6 +47,14 @@ export default function SearchForm() {
             params.set('destination', formData.destination)
             params.set('passengers', totalPassengers.toString())
             params.set('tripType', formData.status)
+
+            setSearchData({
+                date: formData.date,
+                origin: formData.origin,
+                destination: formData.destination,
+                passengers: totalPassengers,
+                tripType: formData.status
+            })
 
             router.push(`/pasajes?${params.toString()}`)
 

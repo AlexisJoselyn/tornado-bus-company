@@ -1,4 +1,4 @@
-import { DepartureTravel } from '@/app/@types/travels'
+import { DepartureTravel } from '@/app/lib/types/travels'
 import { MapPinIcon } from '@heroicons/react/24/outline'
 
 interface TravelCardProps {

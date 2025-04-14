@@ -1,5 +1,5 @@
-import { PassengerType } from "@/app/@types/passengers";
-import { DepartureTravelFilters, FormDataParams } from "@/app/@types/travels";
+import { PassengerType } from "@/app/lib/types/passengers";
+import { DepartureTravelFilters, FormDataParams } from "@/app/lib/types/travels";
 
 export const prepareTravelFilters = (
   formData: FormDataParams,
