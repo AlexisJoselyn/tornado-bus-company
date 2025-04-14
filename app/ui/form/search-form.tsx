@@ -4,11 +4,12 @@ import { ArrowsRightLeftIcon, ArrowRightIcon, UserGroupIcon, CalendarIcon } from
 import Destination from "./destination";
 import Origin from "./origin";
 import PassengerSelector from "./passenger";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PassengerType } from "@/app/lib/types/passengers";
 import { formatPassengerCounts } from "@/app/lib/utils/formatData";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSearchStore } from "@/app/lib/store/store";
+import { getMidDate } from "@/app/lib/utils/formatDates";
 
 export default function SearchForm() {
     const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
@@ -18,6 +19,14 @@ export default function SearchForm() {
     const router = useRouter()
     const searchParams = useSearchParams();
     const setSearchData = useSearchStore((state) => state.setSearchData)
+    const [tripType, setTripType] = useState('one-way');
+    const dateInputRef = useRef<HTMLInputElement>(null);
+
+    
+
+    const handleTripTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTripType(event.target.value);
+    };
 
     const handlePassengerChange = (counts: { [key: number]: number }, types: PassengerType[]) => {
         const formatted = formatPassengerCounts(counts, types)
@@ -65,6 +74,11 @@ export default function SearchForm() {
         }
     }
 
+    const handleDateInputClick = () => {
+        if (dateInputRef.current) {
+            dateInputRef.current.showPicker();
+        }
+    };
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-4 w-full max-w-xl p-4 bg-white rounded-lg shadow-md">
@@ -73,15 +87,17 @@ export default function SearchForm() {
             <div className="flex gap-4">
                 <div className="flex items-center">
                     <input
-                        id="ida"
+                        id="one-way"
                         name="status"
                         type="radio"
-                        value="ida"
+                        value="one-way"
+                        checked={tripType === 'one-way'}
+                        onChange={handleTripTypeChange}
                         className="h-4 w-4 cursor-pointer focus:ring-2"
                         aria-describedby="customer-error"
                     />
                     <label
-                        htmlFor="ida"
+                        htmlFor="one-way"
                         className="ml-1 flex cursor-pointer items-center gap-1.5 rounded-full py-1.5 text-s font-semibold"
                     >
                         Solo ida <ArrowRightIcon className="h-4 w-4" />
@@ -89,14 +105,16 @@ export default function SearchForm() {
                 </div>
                 <div className="flex items-center">
                     <input
-                        id="idavuelta"
+                        id="round-trip"
                         name="status"
                         type="radio"
-                        value="idavuelta"
+                        value="round-trip"
+                        checked={tripType === 'round-trip'}
+                        onChange={handleTripTypeChange}
                         className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                     />
                     <label
-                        htmlFor="idavuelta"
+                        htmlFor="round-trip"
                         className="ml-1 flex cursor-pointer items-center gap-1.5 rounded-full py-1.5 text-s font-semibold"
                     >
                         Ida y vuelta <ArrowsRightLeftIcon className="h-4 w-4" />
@@ -136,10 +154,10 @@ export default function SearchForm() {
             </div>
             {/* Departure date */}
             <div className="mb-4">
-                <label htmlFor="fecha" className="mb-2 block text-sm font-semibold">
+                <label htmlFor="date" className="mb-2 block text-sm font-semibold">
                     Fecha de salida:
                 </label>
-                <div className="relative mt-2 rounded-md">
+                <div className="relative mt-2 rounded-md" onClick={handleDateInputClick}>
                     <div className="relative">
                         <input
                             type="date"
@@ -149,11 +167,38 @@ export default function SearchForm() {
                             style={{ width: '240px' }}
                             disabled={false}
                             placeholder="Selecciona una fecha"
+                            ref={dateInputRef}
+                            min={getMidDate()}
                         />
                         <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
                     </div>
                 </div>
             </div>
+            {/* Return date (only if round-trip) */}
+            {tripType === 'round-trip' && (
+                <div className="mb-4">
+                    <label htmlFor="return-date" className="mb-2 block text-sm font-semibold">
+                        Fecha de regreso:
+                    </label>
+                    <div className="relative mt-2 rounded-md" onClick={handleDateInputClick}>
+                        <div className="relative">
+                            <input
+                                type="date"
+                                id="return-date"
+                                name="return-date"
+                                className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] ${false ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                style={{ width: '240px' }}
+                                disabled={false}
+                                placeholder="Selecciona una fecha"
+                                ref={dateInputRef}
+                                min={getMidDate()}
+                            />
+                            <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Submit button */}
             <button
                 type="submit"
                 disabled={isLoading}
