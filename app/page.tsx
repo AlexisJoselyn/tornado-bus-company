@@ -4,73 +4,40 @@ import Image from "next/image";
 import Header from "./ui/header";
 import SearchForm from "./ui/form/search-form";
 
-export default function Home() {
+export default function Page() {
   return (
     <>
       <Header />
-      <main className="flex flex-col items-center justify-center gap-8 bg-orange-50">
+      <main className="flex flex-col items-center justify-center gap-8">
         <div className="relative w-full h-[300px] md:h-[450px] overflow-hidden">
           <Image
             src="/banner-desktop.png"
             fill
+            priority
             className="hidden md:block object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             alt="Banner image of the bus company desktop version"
           />
           <Image
             src="/banner-mobile.png"
             fill
+            priority
             className="block md:hidden"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             alt="Banner image of the bus company mobile version"
           />
         </div>
         <SearchForm />
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      <footer className="flex flex-row items-center justify-center gap-8 p-8">
+        <div className="flex flex-col items-center justify-center gap-4 p-4">
+          <h2 className="text-xl font-bold text-blue-800">¿Necesitas ayuda?</h2>
+          <p className="text-gray-600">Contáctanos al 123-456-7890</p>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-4 p-4">
+          <h2 className="text-xl font-bold text-blue-800">Síguenos en redes sociales</h2>
+          <p className="text-gray-600">Facebook | Twitter | Instagram</p>
+        </div>
       </footer>
     </>
   );

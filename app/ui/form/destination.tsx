@@ -48,7 +48,7 @@ export default function Destination() {
             <div className="relative mt-2 rounded-md">
                 <div className="relative">
                     <AsyncSelectComponent
-                        name={'destino'}
+                        name={'destination'}
                         id={'destination'}
                         placeholder={'¿A dónde vas?'}
                         loadOptions={loadOptions}
