@@ -46,6 +46,7 @@ export default function SearchForm() {
                 origin: string
                 destination: string
                 date: string
+                'return-date'?: string
             }
 
             const totalPassengers = Object.values(passengerCounts).reduce((sum, count) => sum + count, 0)
@@ -56,6 +57,13 @@ export default function SearchForm() {
             params.set('destination', formData.destination)
             params.set('passengers', totalPassengers.toString())
             params.set('tripType', formData.status)
+            if (formData.status === 'round-trip') {
+                if (!formData['return-date']) {
+                    alert('La fecha de regreso es obligatoria para un viaje de ida y vuelta')
+                    return
+                }
+                params.set('return-date', formData['return-date'] || '')
+            }
 
             setSearchData({
                 date: formData.date,
