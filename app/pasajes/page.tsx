@@ -47,7 +47,7 @@ export default function PasajesPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-6">Resultados de búsqueda</h1>
+            <h1 className="text-2xl font-bold mb-6">Tickets:</h1>
 
             {travels.length > 0 ? (
                 <div className="grid gap-4">
