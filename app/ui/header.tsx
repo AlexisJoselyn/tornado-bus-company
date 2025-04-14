@@ -8,8 +8,7 @@ export default function Header() {
                 <Image
                     src="https://tornadobus.com/wp-content/uploads/2022/07/Recurso-3.svg"
                     width={180}
-                    height={0}
-                    style={{ height: "auto" }}
+                    height={90}
                     alt="Banner image of the bus company desktop version"
                 />
             </div>

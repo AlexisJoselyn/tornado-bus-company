@@ -1,5 +1,5 @@
-import { CitiesResponse, DestinationsResponse } from "@/app/@types/cities";
-import { DepartureTravelFilters, DepartureTravelsResponse } from "@/app/@types/travels";
+import { CitiesResponse, DestinationsResponse } from "@/app/lib/types/cities";
+import { DepartureTravelFilters, DepartureTravelsResponse } from "@/app/lib/types/travels";
 
 const BASE_URL = 'https://discovery.local.onroadts.com/v1/web';
 

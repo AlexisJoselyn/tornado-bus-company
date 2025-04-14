@@ -1,28 +1,49 @@
-import { DepartureTravelFilters } from "../@types/travels"
-import { listDepartureTravels } from "../lib/api/cities"
-import { prepareTravelFilters } from "../lib/utils/formatData"
-import TravelCard from "../ui/travel/travel-card"
+'use client'
 
-export default async function Page({
-    searchParams
-}: {
-    searchParams: {
-        date: string
-        origin: string
-        destination: string
-        passengers: string
-        tripType: string
+
+import { useEffect, useState } from 'react'
+import { useSearchStore } from '../lib/store/store'
+import { listDepartureTravels } from '../lib/api/cities'
+import { DepartureTravel, DepartureTravelFilters } from '../lib/types/travels'
+import { prepareTravelFilters } from '../lib/utils/formatData'
+import TravelCard from '../ui/travel/travel-card'
+
+export default function PasajesPage() {
+    const searchData = useSearchStore((state) => state.searchData)
+    const [travels, setTravels] = useState<DepartureTravel[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchTravels = async () => {
+            if (!searchData) {
+                window.location.href = '/'
+                return
+            }
+
+            try {
+              
+                const filters: DepartureTravelFilters = prepareTravelFilters({
+                    date: searchData.date,
+                    origin: searchData.origin,
+                    destination: searchData.destination,
+                }, Number(searchData.passengers) || 1);
+
+                const { data: response } = await listDepartureTravels(filters)
+
+                setTravels(response)
+            } catch (error) {
+                console.error('Error fetching travels:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchTravels()
+    }, [searchData])
+
+    if (loading) {
+        return <div className="text-center py-8">Cargando resultados...</div>
     }
-}) {
-    const {date, origin, destination, passengers} = await searchParams
-    
-    const apiFilters: DepartureTravelFilters = prepareTravelFilters({
-        date: date,
-        origin: origin,
-        destination: destination,
-    }, Number(passengers) || 1);
-
-    const { data: travels } = await listDepartureTravels(apiFilters)
 
     return (
         <div className="container mx-auto px-4 py-8">
