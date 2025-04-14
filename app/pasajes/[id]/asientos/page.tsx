@@ -2,6 +2,7 @@
 
 import { useSearchStore } from '@/app/lib/store/store';
 import { useTicketStore } from '@/app/lib/store/ticketStore';
+import { MarkSeatPayload } from '@/app/lib/types/mark';
 import { Seat, SeatLevel } from '@/app/lib/types/seats';
 import { BusLevel } from '@/app/ui/bus/bus-level';
 import { useEffect, useState } from 'react';
@@ -12,28 +13,64 @@ export default function Page() {
   const seats = useTicketStore((state) => state.seats);
   const loadingSeats = useTicketStore((state) => state.loadingSeats);
   const searchData = useSearchStore((state) => state.searchData)
+  const markSeats = useTicketStore((state) => state.markSeats);
+  const totalDetail = useTicketStore((state) => state.totalDetail);
+  const searchDataStore = useSearchStore((state) => state.searchData)
+
 
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const passengerCount = searchData?.passengers || 1;
 
   useEffect(() => {
     if (selectedTravel) {
-      fetchSeats(selectedTravel.id, selectedTravel.cityInitID, selectedTravel.cityEndID);
+      fetchSeats(selectedTravel.id, Number(searchDataStore.origin), Number(searchDataStore.destination));
     }
   }, [selectedTravel]);
 
-  const handleSeatSelect = (seat: Seat) => {
+  const handleSeatSelect = async (seat: Seat) => {
     const isSelected = selectedSeats.some((s) => s.id === seat.id);
 
+    let updatedSeats = [];
     if (isSelected) {
-      setSelectedSeats((prev) => prev.filter((s) => s.id !== seat.id));
+      updatedSeats = selectedSeats.filter((s) => s.id !== seat.id);
     } else if (selectedSeats.length < passengerCount) {
-      setSelectedSeats((prev) => [...prev, seat]);
-      // call API to reserve the seat
+      updatedSeats = [...selectedSeats, seat];
     } else {
-        alert('Ya has seleccionado el máximo de asientos permitidos.');
+      alert('Ya has seleccionado el máximo de asientos permitidos.');
+      return;
+    }
+
+    setSelectedSeats(updatedSeats);
+
+    if (updatedSeats.length > 0) {
+      const payload: MarkSeatPayload = {
+        tickeTypeID: 1,
+        ticketSessionId: null,
+        cityInitID: selectedTravel.cityInitID,
+        cityEndID: selectedTravel.cityEndID,
+        itineraryID: selectedTravel.id,
+        busPlaceID: updatedSeats.map((s) => s.id),
+        tempTicketId: null,
+        ticketRef: null,
+        idMulti: null,
+        isReturn: false,
+        currencyID: 1,
+        mDestiny: null,
+        mOrigin: null,
+        mRow: null,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        externalInitID: null,
+        externalEndID: null,
+      };
+
+      try {
+        await markSeats(payload);
+      } catch (err) {
+        console.error('Error al marcar asiento:', err);
+      }
     }
   };
+
 
   if (!selectedTravel) return <p>No hay viaje seleccionado.</p>;
   if (loadingSeats) return <p>Cargando asientos...</p>;
@@ -49,6 +86,13 @@ export default function Page() {
           onSeatSelect={handleSeatSelect}
         />
       ))}
+      {totalDetail && (
+        <div className="mt-4 text-center">
+          <p className="text-lg font-semibold">
+            Total: {totalDetail.subtotal} + {totalDetail.tax} = {totalDetail.total}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

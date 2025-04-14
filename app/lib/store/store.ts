@@ -14,7 +14,7 @@ interface SearchParams {
 }
 
 interface SearchStore {
-  searchData: SearchParams | null
+  searchData: SearchParams
   setSearchData: (data: SearchParams) => void
   clearSearchData: () => void
 }
@@ -25,7 +25,12 @@ export const useTravelStore = create<TravelState>()((set) => ({
 }))
 
 export const useSearchStore = create<SearchStore>((set) => ({
-  searchData: null,
+  searchData: {
+    date: '',
+    origin: '',
+    destination: '',
+    passengers: 1, 
+  },
   setSearchData: (data) => set({ searchData: data }),
-  clearSearchData: () => set({ searchData: null })
+  clearSearchData: () => set({ searchData: { date: '', origin: '', destination: '', passengers: 1 }})
 }))

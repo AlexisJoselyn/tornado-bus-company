@@ -1,5 +1,6 @@
 import { PassengerType } from "@/app/lib/types/passengers";
 import { SeatResponse } from "../types/seats";
+import { MarkSeatPayload } from "../types/mark";
 
 const BASE_URL = 'https://api.local.onroadts.com/v1/web';
 
@@ -50,4 +51,20 @@ export const getAvailableSeats = async (
     console.error('Error fetching available seats:', error);
     throw error;
   }
+};
+
+export const putMarkSeat = async (payload: MarkSeatPayload) => {
+  const res = await fetch(`${BASE_URL}/list/seats/mark`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Error al marcar el asiento");
+  }
+  return data;
 };
