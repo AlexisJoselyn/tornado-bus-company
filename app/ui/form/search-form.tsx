@@ -1,18 +1,24 @@
+'use client'
+
 import { ArrowsRightLeftIcon, ArrowRightIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import Destination from "./destination";
 import Origin from "./origin";
 import PassengerSelector from "./passenger";
 import { useState } from "react";
 import { PassengerType } from "@/app/@types/passengers";
-import { DepartureTravelFilters } from "@/app/@types/travels";
-import { formatPassengerCounts, prepareTravelFilters } from "@/app/lib/utils/formatData";
-import { listDepartureTravels } from "@/app/lib/api/cities";
+// import { DepartureTravelFilters } from "@/app/@types/travels";
+import { formatPassengerCounts } from "@/app/lib/utils/formatData";
+// import { listDepartureTravels } from "@/app/lib/api/cities";
+// import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function SearchForm() {
     const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
     const [passengerInputValue, setPassengerInputValue] = useState("");
     const [passengerCounts, setPassengerCounts] = useState<Record<number, number>>({});
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter()
+    const searchParams = useSearchParams();
 
     const handlePassengerChange = (counts: { [key: number]: number }, types: PassengerType[]) => {
         const formatted = formatPassengerCounts(counts, types)
@@ -21,42 +27,40 @@ export default function SearchForm() {
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
+        e.preventDefault()
+        setIsLoading(true)
 
         try {
             const formData = Object.fromEntries(
                 new FormData(e.currentTarget as HTMLFormElement)
-            ) as unknown as {
-                status: string;
-                origen: string;
-                destino: string;
-                fecha: string;
-            };
+            ) as {
+                status: string
+                origin: string
+                destination: string
+                date: string // Cambiado de 'fecha' a 'date' para coincidir con el name del input
+            }
 
-            const totalPassengers = Object.values(passengerCounts).reduce((sum, count) => sum + count, 0);
+            const totalPassengers = Object.values(passengerCounts).reduce((sum, count) => sum + count, 0)
 
-            const apiFilters: DepartureTravelFilters = prepareTravelFilters({
-                date: formData.fecha,
-                origin: formData.origen,
-                destination: formData.destino,
-                tripType: formData.status as 'one-way' | 'round-trip',
-            }, totalPassengers);
+            const params = new URLSearchParams(searchParams.toString())
+            params.set('date', formData.date)
+            params.set('origin', formData.origin)
+            params.set('destination', formData.destination)
+            params.set('passengers', totalPassengers.toString())
+            params.set('tripType', formData.status)
 
-            console.log('Enviando a API:', apiFilters);
-
-            const response = await listDepartureTravels(apiFilters);
-            console.log('Respuesta de la API:', response.data);
+            router.push(`/pasajes?${params.toString()}`)
 
         } catch (error) {
-            console.error('Error al buscar viajes:', error);
+            console.error('Error al redirigir:', error)
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
+
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-4 w-full max-w-3xl p-4 bg-white rounded-lg shadow-md">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-4 w-full max-w-xl p-4 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-blue-800">Encuentra el viaje ideal para ti</h1>
             {/* Departure and return options */}
             <div className="flex gap-4">
@@ -132,8 +136,8 @@ export default function SearchForm() {
                     <div className="relative">
                         <input
                             type="date"
-                            id="fecha"
-                            name="fecha"
+                            id="date"
+                            name="date"
                             className={`peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] ${false ? 'opacity-50 cursor-not-allowed' : ''}`}
                             style={{ width: '240px' }}
                             disabled={false}
@@ -147,6 +151,7 @@ export default function SearchForm() {
                 type="submit"
                 disabled={isLoading}
                 className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ width: '240px' }}
             >
                 Buscar
             </button>

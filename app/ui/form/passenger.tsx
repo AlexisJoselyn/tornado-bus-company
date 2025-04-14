@@ -16,7 +16,6 @@ export default function PassengerSelector({ onPassengerChange }: PassengerSelect
             try {
                 const types = await getPassengerTypes();
                 setPassengerTypes(types);
-                console.log("Passenger types:", types);
             } catch (err) {
                 console.error("Error fetching cities:", err);
             }

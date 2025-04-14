@@ -52,7 +52,7 @@ export default function Origin() {
             <div className="relative mt-2 rounded-md">
                 <div className="relative">
                     <AsyncSelectComponent
-                        name={'origen'}
+                        name={'origin'}
                         id={'origin'}
                         placeholder={'¿De dónde sales?'}
                         loadOptions={loadOptions}
