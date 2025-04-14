@@ -13,17 +13,30 @@ interface TravelStore {
   ticketSessionId: number | null;
   totalDetail: TotalDetail | null;
   markSeats: (payload: MarkSeatPayload) => Promise<void>;
+  cartDetail: null,
+  isCartOpen: boolean;
+  toggleCart: () => void;
+  totalSeats: number;
+  setTotalSeats: (total: number) => void
 }
 
 export const useTicketStore = create<TravelStore>((set) => ({
+
   selectedTravel: {} as DepartureTravel,
   seats: [],
   loadingSeats: false,
   ticketSessionId: null,
   totalDetail: null,
+  cartDetail: null,
+  isCartOpen: false,
+  toggleCart: () =>
+    set((state) => ({
+      isCartOpen: !state.isCartOpen,
+    })),
+  totalSeats: 0,
 
   setSelectedTravel: (travel) => set({ selectedTravel: travel }),
-
+  setTotalSeats: (total) => set({totalSeats: total}),
   fetchSeats: async (travelId, cityInitId, cityEndId) => {
     set({ loadingSeats: true });
     try {
@@ -47,4 +60,5 @@ export const useTicketStore = create<TravelStore>((set) => ({
       console.error("Error al marcar asiento:", err);
     }
   }
+
 }));

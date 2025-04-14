@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import { inter } from './ui/fonts';
 import "./globals.css";
- 
+import Header from './ui/header';
+import CartModal from './ui/cart/cart-modal';
+
 export const metadata: Metadata = {
   title: {
     template: '%s | Tornado Bus Company',
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Tornado Bus Company',
   keywords: 'Tornado Bus Company, Tornado, Bus, Company',
 };
- 
+
 export default function RootLayout({
   children,
 }: {
@@ -18,7 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <Header />
+        <CartModal />
+        {children}
+      </body>
     </html>
   );
 }
